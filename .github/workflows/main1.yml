@@ -39,24 +39,24 @@ jobs:
 
     - name: Install Trivy
       run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin    
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin    
     
-        - name: Scan Docker Image for Vulnerabilities
-        id: scan-vulnerabilities
-        run: |
-          trivy $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG > trivy_scan_result.txt
-          scan_exit_code=$?
+    - name: Scan Docker Image for Vulnerabilities
+      id: scan-vulnerabilities
+      run: |
+        trivy $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG > trivy_scan_result.txt
+        scan_exit_code=$?
       
-          if [ $scan_exit_code -eq 0 ]; then
-            echo "No vulnerabilities found."
-          elif [ $scan_exit_code -eq 1 ]; then
-            echo "Vulnerabilities found."
-          else
-            echo "Trivy encountered an error."
-          fi
+        if [ $scan_exit_code -eq 0 ]; then
+          echo "No vulnerabilities found."
+        elif [ $scan_exit_code -eq 1 ]; then
+          echo "Vulnerabilities found."
+        else
+          echo "Trivy encountered an error."
+        fi
       
-          exit $scan_exit_code
-        continue-on-error: true
+        exit $scan_exit_code
+      continue-on-error: true
 
     - name: Send Email Notification on Failure
       if: ${{ steps.scan-vulnerabilities.outcome == 'failure' }}
