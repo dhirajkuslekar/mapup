@@ -1,5 +1,5 @@
 ---
-name: Build and Push Pythonapp
+name: Build and Push Application
 on:
   push:
     branches: [ main ]
