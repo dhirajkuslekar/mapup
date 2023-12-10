@@ -37,53 +37,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: Install Trivy
+    - name: Send SMS Notification
+      if: failure()  # Only send SMS on workflow failure
+      env:
+       AWS_REGION: <your-AWS-region>
       run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin    
-    
-    - name: Scan Docker Image for Vulnerabilities
-      id: scan-vulnerabilities
-      run: |
-        trivy $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG > trivy_scan_result.txt
-        scan_exit_code=$?
-      
-        if [ $scan_exit_code -eq 0 ]; then
-          echo "No vulnerabilities found."
-        elif [ $scan_exit_code -eq 1 ]; then
-          echo "Vulnerabilities found."
-        else
-          echo "Trivy encountered an error."
-        fi
-      
-        exit $scan_exit_code
-      continue-on-error: true
-
-    - name: Send Email Notification on Failure
-      if: ${{ steps.scan-vulnerabilities.outcome == 'failure' }}
-      uses: dawidd6/action-send-mail@v3
-      with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          from: mapup941@gmail.com
-          to: mapup941@gmail.com
-          subject: 'Docker Image Upload Failed'
-          body: |
-            Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
-          
-
-    - name: Send Email Notification on Success
-      if: ${{ steps.scan-vulnerabilities.outcome == 'success' }}
-      uses: dawidd6/action-send-mail@v3
-      with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          from: mapup941@gmail.com
-          to: mapup941@gmail.com
-          subject: 'Docker Image Upload Failed'
-          body: |
-            Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
-       
+        aws sns publish --topic-arn "arn:aws:sns:your-region:your-account-id:your-topic-name" --message "Workflow failed!" --region $AWS_REGION
+        
