@@ -38,9 +38,15 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
     - name: Send SMS Notification
-      if: failure()  # Only send SMS on workflow failure
+      if: failure()  
       env:
        AWS_REGION: <your-AWS-region>
       run: |
         aws sns publish --topic-arn "arn:aws:sns:your-region:your-account-id:your-topic-name" --message "Workflow failed!" --region $AWS_REGION
-        
+
+    - name: Send SMS Notification
+      if: success()  
+      env:
+       AWS_REGION: <your-AWS-region>
+      run: |
+        aws sns publish --topic-arn "arn:aws:sns:your-region:your-account-id:your-topic-name" --message "Workflow failed!" --region $AWS_REGION        
