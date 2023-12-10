@@ -49,4 +49,4 @@ jobs:
       env:
        AWS_REGION: us-east-1
       run: |
-        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow failed!" --region $AWS_REGION        
+        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow success!" --region $AWS_REGION        
