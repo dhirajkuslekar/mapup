@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           from: mapup941@gmail.com
-          to: dhirajkuslekar@gmail.com
+          to: mapup941@gmail.com
           subject: 'Docker Image Upload Failed'
           body: |
             Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
@@ -82,7 +82,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           from: mapup941@gmail.com
-          to: dhirajkuslekar@gmail.com
+          to: mapup941@gmail.com
           subject: 'Docker Image Upload Failed'
           body: |
             Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
