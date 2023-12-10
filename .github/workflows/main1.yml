@@ -66,10 +66,12 @@ jobs:
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
+          from: mapup941@gmail.com
+          to: dhirajkuslekar@gmail.com
           subject: 'Docker Image Upload Failed'
           body: |
             Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
-          to: mapup941@gmail.com
+          
 
     - name: Send Email Notification on Success
       if: ${{ steps.scan-vulnerabilities.outcome == 'success' }}
@@ -79,8 +81,9 @@ jobs:
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 'Docker Image Upload Successful'
+          from: mapup941@gmail.com
+          to: dhirajkuslekar@gmail.com
+          subject: 'Docker Image Upload Failed'
           body: |
-            Docker image upload successful for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
-          to: mapup941@gmail.com
+            Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
        
