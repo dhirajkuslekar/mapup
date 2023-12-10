@@ -36,3 +36,30 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Send Email Notification on Failure
+     if: ${{ steps.scan-vulnerabilities.outcome == 'failure' }}
+     uses: dawidd6/action-send-mail@v3
+     with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 'Docker Image Upload Failed'
+          body: |
+            Docker image upload failed for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
+          to: mapup941@gmail.com
+
+    - name: Send Email Notification on Success
+    if: ${{ steps.scan-vulnerabilities.outcome == 'success' }}
+    uses: dawidd6/action-send-mail@v3
+    with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 'Docker Image Upload Successful'
+          body: |
+            Docker image upload successful for tag: ${{ steps.increment-git-tag.outputs.git-tag }}
+          to: mapup941@gmail.com
+       
