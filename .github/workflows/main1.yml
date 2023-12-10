@@ -22,7 +22,7 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Automatic Tagging of Releases
+    - name: Auto-Tagging of Releases
       id: increment-git-tag
       run: |
         bash ./build/git-update.sh -v major
@@ -40,13 +40,13 @@ jobs:
     - name: Send SMS Notification
       if: failure()  
       env:
-       AWS_REGION: <your-AWS-region>
+       AWS_REGION: us-east-1
       run: |
-        aws sns publish --topic-arn "arn:aws:sns:your-region:your-account-id:your-topic-name" --message "Workflow failed!" --region $AWS_REGION
+        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow failed!" --region $AWS_REGION
 
     - name: Send SMS Notification
       if: success()  
       env:
-       AWS_REGION: <your-AWS-region>
+       AWS_REGION: us-east-1
       run: |
-        aws sns publish --topic-arn "arn:aws:sns:your-region:your-account-id:your-topic-name" --message "Workflow failed!" --region $AWS_REGION        
+        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow success!" --region $AWS_REGION        
