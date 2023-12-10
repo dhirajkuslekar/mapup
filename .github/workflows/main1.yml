@@ -36,7 +36,12 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
+    
+    - name: Scan Docker Image for Vulnerabilities
+      run: |
+        trivy --exit-code 1 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      continue-on-error: true
+      
     - name: Send Email Notification on Failure
       if: ${{ steps.scan-vulnerabilities.outcome == 'failure' }}
       uses: dawidd6/action-send-mail@v3
