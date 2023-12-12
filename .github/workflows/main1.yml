@@ -1,5 +1,5 @@
 ---
-name: Build and Push Pythonapp
+name: Build and Push Application
 on:
   push:
     branches: [ main ]
@@ -22,12 +22,31 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Auto-Tagging of Releases
+      id: increment-git-tag
+      run: |
+        bash ./build/git-update.sh -v major
+
     - name: Build, Tag, and Push the Image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: mapupp
-        IMAGE_TAG: latest
+        IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Send SMS Notification
+      if: failure()  
+      env:
+       AWS_REGION: us-east-1
+      run: |
+        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow failed!" --region $AWS_REGION
+
+    - name: Send SMS Notification
+      if: success()  
+      env:
+       AWS_REGION: us-east-1
+      run: |
+        aws sns publish --topic-arn "arn:aws:sns:us-east-1:841012855588:mapupnotification" --message "Workflow success!" --region $AWS_REGION        
