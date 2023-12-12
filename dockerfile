@@ -1,12 +1,8 @@
-FROM node:14
+FROM node:18-alpine
 WORKDIR /image1
-
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-EXPOSE 3000
+RUN npm install
+CMD ["node", "server.js"]
 
-CMD ["npm", "start"]
+EXPOSE 8080
